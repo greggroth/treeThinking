@@ -47,10 +47,9 @@ def writeTreeYaml(tree, feature_list, label):
 def yamlSwitch(vector, ytree, label):
     if 'feature_idx' in ytree.keys() and 'thr' in ytree.keys():
         if 'op' not in ytree.keys():
-            if vector[ytree['feature_idx']] <= ytree['thr']:
-                return yamlSwitch(vector,ytree['false'], label)
-            else:
-                return yamlSwitch(vector,ytree['true'], label)
+            return yamlSwitch(vector,
+                ytree['results'][(vector[ytree['feature_idx']] <= ytree['thr'])],
+                label)
         else:
             ops = {"<=": (lambda x,y: x<=y),
                    ">=": (lambda x,y: x>=y),
@@ -60,10 +59,9 @@ def yamlSwitch(vector, ytree, label):
                    "!=": (lambda x,y: x!=y),
                    "<>": (lambda x,y: x!=y)}
             if ytree['op'] in ops.keys():
-              if ops[ytree['op']](vector[ytree['feature_idx']], ytree['thr']):
-                  return yamlSwitch(vector,ytree['false'], label)
-              else:
-                  return yamlSwitch(vector,ytree['true'], label)
+              return yamlSwitch(vector,
+                ytree['results'][ops[ytree['op']](vector[ytree['feature_idx']], ytree['thr'])],
+                label)
             else:
                 raise ValueError('Unallowed operator')
     elif 'prob' in ytree.keys():
