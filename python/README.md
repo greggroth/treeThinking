@@ -1,6 +1,6 @@
 # The Python module
 
-The original motivation of `treeThinking` was motivated by the process of converting the output of `sklearn`'s `DecisionTreeClassifier` into something that I could simply build into some other logic. Alas, there isn't a convenient way to serialize this(don't say `dot`, that's not what I mean). This grew into the parent directory, i.e. specifying a YAML format that is language agnostic, extensible, yadda-yadda, with heavy input from [@greggroth][https://github.com/greggroth].
+The original motivation of `treeThinking` was motivated by the process of converting the output of `sklearn`'s `DecisionTreeClassifier` into something that I could simply build into some other logic. Alas, there isn't a convenient way to serialize this(don't say `dot`, that's not what I mean). This grew into the parent directory, i.e. specifying a YAML format that is language agnostic, extensible, yadda-yadda, with heavy input from [@greggroth](https://github.com/greggroth).
 
 That YAML format is the real contribution, but for the purpose of solving the original problem, here is a Python module!
 
