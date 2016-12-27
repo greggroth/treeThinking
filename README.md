@@ -14,7 +14,7 @@ The free-thinking of one's age is the common sense of the next. -Matthew Arnold
 
 However, you may want to train your model, and then convert that model into something more language agnostic for integration with some other system. Or, simply serialize your model in a nice readable form.
 
-Another interesting use-case is for an evolutiary model, with intermittent backups. This provides a simple serialization that you can dump, and always return to.
+Another interesting use-case is for an evolutionary model, with intermittent backups. This provides a simple serialization that you can dump, and always return to.
 
 ## How to use:
 
@@ -37,8 +37,6 @@ writeTreeYaml(tree, feature_list, label)
 which will return a string that you'll write to a YAML file. Note that `YAML` is not required for the writing at all.
 
 ### Read the YAML
-
-_depends on `YAML` and `random`._
 
 The YAML is a straightforward presentation of the tree with a few convenient structural choices.
 
@@ -75,6 +73,8 @@ Where `class_name` is the name of the class label you're attempting to assign. `
 
 
 ### Use the YAML
+
+_depends on `YAML` and `random`._
 
 The intention of treeThinking is not to write modules in various languages to read these YAMLs. But who am I kidding, somebody has to start somewhere. Here is a really basic example of how one can use these YAML trees.
 
