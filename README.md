@@ -4,7 +4,7 @@
 The free-thinking of one's age is the common sense of the next. -Matthew Arnold
 ```
 
-`treeThinking` was inspired by the desire to convert the output of `sklearn`'s `DecisionTreeClassifier` models into something more useful.
+`treeThinking` was inspired by the desire to convert the output of `sklearn`'s `DecisionTreeClassifier` models into something more useful. In this case, `treeThinking` outputs its representation to a language-agnostic YAML file which can be consumed by other software for parsing.
 
 This project and schema emerged from conversations with [@greggroth](https://github.com/greggroth) at [Blue Bottle Coffee](https://github.com/bluebottlecoffee).
 
@@ -137,7 +137,7 @@ Not sorry for the bad pun. Am sorry I didn't go with `Lorax`, but copyright, y'k
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at [https://github.com/bluebottlecoffee/eatl](https://github.com/bluebottlecoffee/eatl). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org/) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [https://github.com/BBischof/treeThinking](https://github.com/BBischof/treeThinking). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org/) code of conduct.
 
 ## License
 
