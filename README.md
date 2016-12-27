@@ -4,96 +4,141 @@
 The free-thinking of one's age is the common sense of the next. -Matthew Arnold
 ```
 
-`treeThinking` is intended to be a simple tool for converting the output of `sklearn`'s Decision Tree models into something more useful.
+`treeThinking` was inspired by the desire to convert the output of `sklearn`'s `DecisionTreeClassifier` models into something more useful.
 
-## `treeThinking` is not:
-- If your intention with DT is to simply build a classifier on your training data, and then run it on your full dataset, you could simply run it against the model that you build.
-- If you want to create an API to query the DT for classifing requests, use something like Django or Flask, and build a little API server that uses the model.
+This project and schema emerged from conversations with [@greggroth](https://github.com/greggroth) at [Blue Bottle Coffee](https://github.com/bluebottlecoffee).
 
-## Use cases:
+## The need for schema
 
-However, you may want to train your model, and then convert that model into something more language agnostic for integration with some other system. Or, simply serialize your model in a nice readable form.
+Serializing a decision tree is relatively straightforward, and in fact, extremely ad-hoc. The need for a schema is in anticipation of the integration with other systems. For this reason we outline a general spec which lends itself to customization, but provides a scaffold for the basic logic.
 
-Another interesting use-case is for an evolutionary model, with intermittent backups. This provides a simple serialization that you can dump, and always return to.
-
-## How to use:
-
-### Write the YAML
-
-_depends on `numpy`._
-
-`treeThinking` is a Python module to walk the DT and write a YAML file.
-
-```
-from treeThinking import writeTreeYaml
-```
-
-and then call it as such
-
-```
-writeTreeYaml(tree, feature_list, label)
-```
-
-which will return a string that you'll write to a YAML file. Note that `YAML` is not required for the writing at all.
-
-### Read the YAML
+### Reading the YAML
 
 The YAML is a straightforward presentation of the tree with a few convenient structural choices.
 
 ```
 ---
-- class_name: str
-  features:
-    - str
-    - str
-  tree:
-    idx: int
-    thr: float
-    op: str (opt)
-    true_tree:
-      idx: int (opt)
-      thr: float (opt)
-      op: str (opt)
-      prob: float (opt)
-      true_tree: tree (opt)
-      false_tree: tree (opt)
-    false_tree:
-      idx: int (opt)
-      thr: float (opt)
-      op: str (opt)
-      prob: float (opt)
-      true_tree: tree (opt)
-      false_tree: tree (opt)
+class_name: 'Likes chocolate icecream'
+features:
+  - name: 'Likes ice cream'
+    type: 'binary'
+  - name: 'Likes chocolate'
+    type: 'binary'
+  - name: 'how much do you like ice cream'
+    type: 'continuous'
+    min: 0
+    max: 5
+    step: 1
+nodes:
+  feature_idx: 0
+  op: =
+  thr: 1
+  prob: nil
+  results:
+    true:
+      feature_idx: 1
+      op: >
+      thr: 0.5
+      prob: nil
+      results:
+        true:
+          feature_idx: nil
+          op: nil
+          thr: nil
+          prob: 1
+          results: []
+        false:
+          feature_idx: nil
+          op: nil
+          thr: nil
+          prob: 0
+          results: []
+    false:
+      feature_idx: nil
+      op: nil
+      thr: nil
+      prob: 0
+      results: []
 ```
 
-Where `class_name` is the name of the class label you're attempting to assign. `idx` refers to the feature index(names are presented in order under the `features` list), `thr` is the break boundary for this decision, `op` is a purely optional parameter that can be specified if you want to use other comperators than `<=`(pandas DTs are always `<=`). `true_tree` is where the function recurses if the comparison is true, likewise for `false_tree`. `prob` is the resulting probability of assigning the class label based on the node's purity.
-
-<!-- Which you could think of as the following decision tree: -->
-
-
-
-### Use the YAML
-
-_depends on `YAML` and `random`._
-
-The intention of treeThinking is not to write modules in various languages to read these YAMLs. But who am I kidding, somebody has to start somewhere. Here is a really basic example of how one can use these YAML trees.
-
+Which can be seen as a struct:
 ```
-from treeThinking import yamlSwitch
+---
+class_name: <str>
+features:
+  - name: <str>
+    type: <str> ('opt')('binary', 'continuous')
+    min: <float> ('opt')
+    max: <float> ('opt')
+    step: <float> ('opt')
+nodes:
+  feature_idx: <int>
+  thr: <float>
+  op: <str> (opt)
+  results:
+    true:
+      feature_idx: <int> (opt)
+      thr: <float> (opt)
+      op: <str> (opt)
+      prob: <float> (opt)
+      results:
+        true: <node> (opt)
+        false: <node> (opt)
+    false:
+      feature_idx: <int> (opt)
+      thr: <float> (opt)
+      op: <str> (opt)
+      prob: <float> (opt)
+      results:
+        true: <node> (opt)
+        false: <node> (opt)
 ```
 
-and then call it as such
-
+Noting the optional fields one can create our ice-cream tree a bit less verbosely:
 ```
-yamlSwitch(vector, ytree, label)
+---
+class_name: 'Likes chocolate icecream'
+features:
+  - name: 'Likes ice cream'
+  - name: 'Likes chocolate'
+  - name: 'how much do you like ice cream'
+    min: 0
+    max: 5
+    step: 1
+nodes:
+  feature_idx: 0
+  op: =
+  thr: 1
+  results:
+    true:
+      feature_idx: 1
+      op: >
+      thr: 0.5
+      results:
+        true:
+          prob: 1
+        false:
+          prob: 0
+    false:
+      prob: 0
 ```
 
-which will output a binary determined by walking the tree. I encourage you to peek at this function to see the workings here.
+Where `class_name` is the name of the class label you're attempting to assign. `feature_idx` refers to the feature index(names are presented in order under the `features` list), `thr` is the break boundary for this decision, `op` is a purely optional parameter that can be specified if you want to use other comperators than `<=`(pandas DTs are always `<=`). Results are a list of nodes, with the defaults being `true` is where the function recurses if the comparison is true, likewise for `false`. `prob` is the resulting probability of assigning the class label based on the node's purity.
 
-## Examples:
+## Usage
 
-The `lorax.ipynb` has a worked example for the Titanic dataset. It is probably the fastest way to see this module in use..
+If you're using `sklearn` and want to output your models, under the Python directory is a module for reading and writing YAML in the above format.
+
+One can also use the above schema as a guideline for writing decision tree logic in an extensible way.
 
 ## The name
 
 Not sorry for the bad pun. Am sorry I didn't go with `Lorax`, but copyright, y'know? `¯\_(ツ)_/¯`
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at [https://github.com/bluebottlecoffee/eatl](https://github.com/bluebottlecoffee/eatl). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org/) code of conduct.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
