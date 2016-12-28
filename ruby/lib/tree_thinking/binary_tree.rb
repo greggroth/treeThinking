@@ -28,6 +28,8 @@ module TreeThinking
       when '<' then answer_vector[node.feature_idx] < node.threshold
       when '>=' then answer_vector[node.feature_idx] >= node.threshold
       when '<=' then answer_vector[node.feature_idx] <= node.threshold
+      else
+        answer_vector[node.feature_idx] <= node.threshold
       end
     end
   end
