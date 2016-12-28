@@ -21,10 +21,3 @@ tree:
           prob: 0.1
     false:
       prob: 0
-
-# <Node>
-#   feature_idx:
-#   op:
-#   thr:
-#   prob:
-#   results:
